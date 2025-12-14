@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistem Perbandingan Algoritma Knapsack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    .algorithm-card {
+      border-left: 4px solid #0d6efd;
+      transition: transform 0.2s;
+    }
+    .algorithm-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .result-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .metric-card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .badge-custom {
+      font-size: 0.9rem;
+      padding: 8px 15px;
+    }
+    pre {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .comparison-table {
+      font-size: 0.95rem;
+    }
+    .winner {
+      background-color: #d4edda !important;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Sistem Perbandingan Algoritma Knapsack</h2>
+    <p class="text-muted">Comparative Study: Greedy vs Brute Force Algorithm</p>
+  </div>
+
+  <!-- Input Section -->
+  <div class="card algorithm-card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><i class="bi bi-upload"></i> Input Data & Konfigurasi</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Upload Dataset Excel (.xlsx)</label>
+          <input type="file" id="fileInput" class="form-control" accept=".xlsx">
+          <small class="text-muted">Format: Kolom "Nama Barang", "Berat", "Nilai (Profit)"</small>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Kapasitas Knapsack (Max Weight)</label>
+          <input type="number" id="capacity" class="form-control" value="50" min="1">
+          <small class="text-muted">Batas maksimal berat total yang dapat dibawa</small>
+        </div>
+      </div>
+
+      <div class="alert alert-info" id="dataInfo" style="display: none;">
+        <strong>Dataset Loaded:</strong> <span id="itemCount">0</span> items
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-success btn-lg" onclick="runGreedy()">
+          <i class="bi bi-lightning"></i> Run Greedy Algorithm
+        </button>
+        <button class="btn btn-warning btn-lg" onclick="runBruteForce()">
+          <i class="bi bi-gear"></i> Run Brute Force
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="runBoth()">
+          <i class="bi bi-play-fill"></i> Run Both & Compare
+        </button>
+        <button class="btn btn-secondary" onclick="generateSampleData()">
+          <i class="bi bi-table"></i> Generate Sample Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Comparison -->
+  <div class="row" id="resultsSection" style="display: none;">
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Greedy Algorithm (Heuristic)</h5>
+        </div>
+        <div class="card-body">
+          <div id="greedyOutput"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0">Brute Force (Optimal)</h5>
+        </div>
+        <div class="card-body">
+          <div id="bruteOutput"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="card mb-4" id="comparisonSection" style="display: none;">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Perbandingan Performa Algoritma</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered comparison-table">
+          <thead class="table-light">
+            <tr>
+              <th>Metrik</th>
+              <th class="text-center">Greedy Algorithm</th>
+              <th class="text-center">Brute Force</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row" id="chartSection" style="display: none;">
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Perbandingan Nilai & Berat</h5>
+          <canvas id="resultChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Efisiensi Algoritma</h5>
+          <canvas id="efficiencyChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Output -->
+  <div class="card" id="detailSection" style="display: none;">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">Detail Lengkap Perhitungan</h5>
+    </div>
+    <div class="card-body">
+      <pre id="detailOutput" class="bg-dark text-light p-3 rounded"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+let items = [];
+let greedyResult = { value: 0, weight: 0, items: [], time: 0 };
+let bruteResult = { value: 0, weight: 0, items: [], time: 0 };
+let chart1 = null;
+let chart2 = null;
+
+// Load Excel File
+fileInput.addEventListener('change', function (e) {
+  const reader = new FileReader();
+  reader.onload = function (evt) {
+    const data = new Uint8Array(evt.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(sheet);
+
+    items = json.map(row => ({
+      name: row['Nama Barang'] || row['Name'] || 'Item',
+      weight: Number(row['Berat'] || row['Weight']) || 0,
+      value: Number(row['Nilai (Profit)'] || row['Value'] || row['Profit']) || 0
+    }));
+
+    document.getElementById('dataInfo').style.display = 'block';
+    document.getElementById('itemCount').textContent = items.length;
+  };
+  reader.readAsArrayBuffer(e.target.files[0]);
+});
+
+// Generate Sample Data
+function generateSampleData() {
+  items = [
+    { name: 'Laptop', weight: 3, value: 2000 },
+    { name: 'Kamera', weight: 2, value: 1500 },
+    { name: 'Tablet', weight: 1, value: 800 },
+    { name: 'Speaker', weight: 2, value: 600 },
+    { name: 'Headphone', weight: 1, value: 400 },
+    { name: 'Charger', weight: 1, value: 200 },
+    { name: 'Mouse', weight: 0.5, value: 150 },
+    { name: 'Keyboard', weight: 1.5, value: 300 }
+  ];
+  
+  document.getElementById('dataInfo').style.display = 'block';
+  document.getElementById('itemCount').textContent = items.length;
+  alert('Sample data berhasil dibuat! (8 items)');
+}
+
+// Greedy Algorithm
+function runGreedy() {
+  if (items.length === 0) return alert('Upload dataset terlebih dahulu!');
+
+  const cap = Number(capacity.value);
+  const startTime = performance.now();
+  
+  // Hitung rasio value/weight dan sort
+  const sorted = [...items].map(item => ({
+    ...item,
+    ratio: item.value / item.weight
+  })).sort((a, b) => b.ratio - a.ratio);
+
+  let totalWeight = 0;
+  let totalValue = 0;
+  let chosen = [];
+
+  for (const item of sorted) {
+    if (totalWeight + item.weight <= cap) {
+      totalWeight += item.weight;
+      totalValue += item.value;
+      chosen.push(item);
+    }
+  }
+
+  const endTime = performance.now();
+  greedyResult = {
+    weight: totalWeight,
+    value: totalValue,
+    items: chosen,
+    time: (endTime - startTime).toFixed(4)
+  };
+
+  displayResults();
+}
+
+// Brute Force Algorithm
+function runBruteForce() {
+  if (items.length === 0) return alert('Upload dataset terlebih dahulu!');
+  if (items.length > 20) {
+    if (!confirm('Dataset memiliki lebih dari 20 item. Brute Force akan memakan waktu lama. Lanjutkan?')) {
+      return;
+    }
+  }
+
+  const cap = Number(capacity.value);
+  const n = items.length;
+  const startTime = performance.now();
+  
+  let bestValue = 0;
+  let bestWeight = 0;
+  let bestSet = [];
+
+  // Generate semua kombinasi (2^n)
+  for (let i = 0; i < (1 << n); i++) {
+    let w = 0, v = 0, set = [];
+    for (let j = 0; j < n; j++) {
+      if (i & (1 << j)) {
+        w += items[j].weight;
+        v += items[j].value;
+        set.push(items[j]);
+      }
+    }
+    if (w <= cap && v > bestValue) {
+      bestValue = v;
+      bestWeight = w;
+      bestSet = set;
+    }
+  }
+
+  const endTime = performance.now();
+  bruteResult = {
+    weight: bestWeight,
+    value: bestValue,
+    items: bestSet,
+    time: (endTime - startTime).toFixed(4)
+  };
+
+  displayResults();
+}
+
+// Run Both Algorithms
+function runBoth() {
+  runGreedy();
+  setTimeout(() => runBruteForce(), 100);
+}
+
+// Display Results
+function displayResults() {
+  document.getElementById('resultsSection').style.display = 'flex';
+  document.getElementById('detailSection').style.display = 'block';
+
+  // Greedy Output
+  const greedyHTML = `
+    <div class="metric-card">
+      <h6 class="text-success">Total Nilai (Profit)</h6>
+      <h3 class="mb-0">${greedyResult.value}</h3>
+    </div>
+    <div class="metric-card">
+      <h6 class="text-secondary">Total Berat</h6>
+      <h3 class="mb-0">${greedyResult.weight} / ${capacity.value}</h3>
+    </div>
+    <div class="metric-card">
+      <h6 class="text-primary">Waktu Eksekusi</h6>
+      <h3 class="mb-0">${greedyResult.time} ms</h3>
+    </div>
+    <div class="metric-card">
+      <h6>Item Terpilih (${greedyResult.items.length})</h6>
+      <ul class="mb-0">
+        ${greedyResult.items.map(item => `<li>${item.name} (W:${item.weight}, V:${item.value})</li>`).join('')}
+      </ul>
+    </div>
+  `;
+
+  // Brute Force Output
+  const bruteHTML = `
+    <div class="metric-card">
+      <h6 class="text-warning">Total Nilai (Profit)</h6>
+      <h3 class="mb-0">${bruteResult.value}</h3>
+    </div>
+    <div class="metric-card">
+      <h6 class="text-secondary">Total Berat</h6>
+      <h3 class="mb-0">${bruteResult.weight} / ${capacity.value}</h3>
+    </div>
+    <div class="metric-card">
+      <h6 class="text-primary">Waktu Eksekusi</h6>
+      <h3 class="mb-0">${bruteResult.time} ms</h3>
+    </div>
+    <div class="metric-card">
+      <h6>Item Terpilih (${bruteResult.items.length})</h6>
+      <ul class="mb-0">
+        ${bruteResult.items.map(item => `<li>${item.name} (W:${item.weight}, V:${item.value})</li>`).join('')}
+      </ul>
+    </div>
+  `;
+
+  document.getElementById('greedyOutput').innerHTML = greedyHTML;
+  document.getElementById('bruteOutput').innerHTML = bruteHTML;
+
+  // Comparison Table
+  if (greedyResult.time > 0 && bruteResult.time > 0) {
+    displayComparison();
+  }
+
+  // Detailed Output
+  displayDetailedOutput();
+
+  // Charts
+  renderCharts();
+}
+
+// Display Comparison
+function displayComparison() {
+  document.getElementById('comparisonSection').style.display = 'block';
+  
+  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+  const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
+  
+  const valueWinner = greedyResult.value >= bruteResult.value ? 'greedy' : 'brute';
+  const timeWinner = greedyResult.time <= bruteResult.time ? 'greedy' : 'brute';
+  
+  const tableHTML = `
+    <tr class="${valueWinner === 'greedy' ? 'winner' : ''}">
+      <td>Total Nilai (Profit)</td>
+      <td class="text-center ${valueWinner === 'greedy' ? '' : ''}">${greedyResult.value}</td>
+      <td class="text-center ${valueWinner === 'brute' ? '' : ''}">${bruteResult.value}</td>
+    </tr>
+    <tr>
+      <td>Total Berat</td>
+      <td class="text-center">${greedyResult.weight}</td>
+      <td class="text-center">${bruteResult.weight}</td>
+    </tr>
+    <tr>
+      <td>Jumlah Item Terpilih</td>
+      <td class="text-center">${greedyResult.items.length}</td>
+      <td class="text-center">${bruteResult.items.length}</td>
+    </tr>
+    <tr class="${timeWinner === 'greedy' ? 'winner' : ''}">
+      <td>Waktu Eksekusi (ms)</td>
+      <td class="text-center">${greedyResult.time}</td>
+      <td class="text-center">${bruteResult.time}</td>
+    </tr>
+    <tr>
+      <td>Kompleksitas Waktu</td>
+      <td class="text-center">O(n log n)</td>
+      <td class="text-center">O(2<sup>n</sup>)</td>
+    </tr>
+    <tr>
+      <td>Akurasi Greedy</td>
+      <td class="text-center" colspan="2"><span class="badge bg-info">${accuracy}% dari solusi optimal</span></td>
+    </tr>
+    <tr>
+      <td>Speedup Greedy</td>
+      <td class="text-center" colspan="2"><span class="badge bg-success">${speedup}x lebih cepat</span></td>
+    </tr>
+  `;
+  
+  document.getElementById('comparisonTable').innerHTML = tableHTML;
+}
+
+// Detailed Output
+function displayDetailedOutput() {
+  let output = '═══════════════════════════════════════════════════════════\n';
+  output += '             HASIL PERBANDINGAN ALGORITMA KNAPSACK\n';
+  output += '═══════════════════════════════════════════════════════════\n\n';
+  
+  output += `Kapasitas Knapsack: ${capacity.value}\n`;
+  output += `Jumlah Item Tersedia: ${items.length}\n\n`;
+  
+  output += '───────────────────────────────────────────────────────────\n';
+  output += 'GREEDY ALGORITHM (Rasio Nilai/Berat)\n';
+  output += '───────────────────────────────────────────────────────────\n';
+  output += `Total Nilai      : ${greedyResult.value}\n`;
+  output += `Total Berat      : ${greedyResult.weight}\n`;
+  output += `Waktu Eksekusi   : ${greedyResult.time} ms\n`;
+  output += `Item Terpilih    : ${greedyResult.items.length} items\n`;
+  greedyResult.items.forEach((item, i) => {
+    output += `  ${i+1}. ${item.name} (Berat: ${item.weight}, Nilai: ${item.value}, Rasio: ${(item.value/item.weight).toFixed(2)})\n`;
+  });
+  
+  output += '\n───────────────────────────────────────────────────────────\n';
+  output += 'BRUTE FORCE ALGORITHM (Solusi Optimal)\n';
+  output += '───────────────────────────────────────────────────────────\n';
+  output += `Total Nilai      : ${bruteResult.value}\n`;
+  output += `Total Berat      : ${bruteResult.weight}\n`;
+  output += `Waktu Eksekusi   : ${bruteResult.time} ms\n`;
+  output += `Item Terpilih    : ${bruteResult.items.length} items\n`;
+  bruteResult.items.forEach((item, i) => {
+    output += `  ${i+1}. ${item.name} (Berat: ${item.weight}, Nilai: ${item.value})\n`;
+  });
+  
+  if (bruteResult.time > 0 && greedyResult.time > 0) {
+    output += '\n───────────────────────────────────────────────────────────\n';
+    output += 'ANALISIS PERBANDINGAN\n';
+    output += '───────────────────────────────────────────────────────────\n';
+    const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+    const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
+    output += `Akurasi Greedy   : ${accuracy}% dari solusi optimal\n`;
+    output += `Speedup          : ${speedup}x lebih cepat\n`;
+    output += `Selisih Nilai    : ${Math.abs(bruteResult.value - greedyResult.value)}\n`;
+    output += `Selisih Berat    : ${Math.abs(bruteResult.weight - greedyResult.weight)}\n`;
+  }
+  
+  output += '\n═══════════════════════════════════════════════════════════\n';
+  
+  document.getElementById('detailOutput').textContent = output;
+}
+
+// Render Charts
+function renderCharts() {
+  document.getElementById('chartSection').style.display = 'flex';
+  
+  // Chart 1: Value & Weight Comparison
+  const ctx1 = document.getElementById('resultChart');
+  if (chart1) chart1.destroy();
+  
+  chart1 = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Greedy', 'Brute Force'],
+      datasets: [
+        {
+          label: 'Total Nilai',
+          data: [greedyResult.value, bruteResult.value],
+          backgroundColor: 'rgba(40, 167, 69, 0.8)',
+          borderColor: 'rgba(40, 167, 69, 1)',
+          borderWidth: 2
+        },
+        {
+          label: 'Total Berat',
+          data: [greedyResult.weight, bruteResult.weight],
+          backgroundColor: 'rgba(255, 193, 7, 0.8)',
+          borderColor: 'rgba(255, 193, 7, 1)',
+          borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+  
+  // Chart 2: Efficiency (Time & Accuracy)
+  const ctx2 = document.getElementById('efficiencyChart');
+  if (chart2) chart2.destroy();
+  
+  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+  
+  chart2 = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: ['Waktu Eksekusi (ms)', 'Akurasi (%)'],
+      datasets: [
+        {
+          label: 'Greedy',
+          data: [parseFloat(greedyResult.time), parseFloat(accuracy)],
+          borderColor: 'rgba(40, 167, 69, 1)',
+          backgroundColor: 'rgba(40, 167, 69, 0.2)',
+          tension: 0.4
+        },
+        {
+          label: 'Brute Force',
+          data: [parseFloat(bruteResult.time), 100],
+          borderColor: 'rgba(255, 193, 7, 1)',
+          backgroundColor: 'rgba(255, 193, 7, 0.2)',
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>
