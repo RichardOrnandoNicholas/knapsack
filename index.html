@@ -180,25 +180,46 @@ let chart1 = null;
 let chart2 = null;
 
 // Load Excel File
+document.getElementById('fileInput').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
-fileInput.addEventListener('change', function (e) {
   const reader = new FileReader();
   reader.onload = function (evt) {
-    const data = new Uint8Array(evt.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(sheet);
+    try {
+      const data = new Uint8Array(evt.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet);
 
-    items = json.map(row => ({
-      name: row['Nama Barang'] || row['Name'] || 'Item',
-      weight: Number(row['Berat'] || row['Weight']) || 0,
-      value: Number(row['Nilai'] || row['Value'] || row['Profit']) || 0
-    }));
+      if (json.length === 0) {
+        alert('File Excel kosong atau tidak valid. Pastikan ada data di sheet pertama.');
+        return;
+      }
 
-    document.getElementById('dataInfo').style.display = 'block';
-    document.getElementById('itemCount').textContent = items.length;
+      items = json.map(row => ({
+        name: row['Nama Barang'] || row['Name'] || 'Item',
+        weight: Number(row['Berat'] || row['Weight']) || 0,
+        value: Number(row['Nilai'] || row['Value'] || row['Profit']) || 0
+      })).filter(item => item.weight > 0 && item.value > 0); // Filter item valid
+
+      if (items.length === 0) {
+        alert('Tidak ada item valid dalam dataset. Pastikan kolom berat dan nilai berisi angka positif.');
+        return;
+      }
+
+      document.getElementById('dataInfo').style.display = 'block';
+      document.getElementById('itemCount').textContent = items.length;
+      alert(`Dataset berhasil dimuat: ${items.length} item(s) valid.`);
+    } catch (error) {
+      alert('Error membaca file Excel: ' + error.message);
+    }
   };
-  reader.readAsArrayBuffer(e.target.files[0]);
+  reader.onerror = function () {
+    alert('Error membaca file.');
+  };
+  reader.readAsArrayBuffer(file);
 });
 
 // Generate Sample Data
@@ -223,7 +244,7 @@ function generateSampleData() {
 function runGreedy() {
   if (items.length === 0) return alert('Upload dataset terlebih dahulu!');
 
-  const cap = Number(capacity.value);
+  const cap = Number(document.getElementById('capacity').value);
   const startTime = performance.now();
   
   // Hitung rasio value/weight dan sort
@@ -264,7 +285,7 @@ function runBruteForce() {
     }
   }
 
-  const cap = Number(capacity.value);
+  const cap = Number(document.getElementById('capacity').value);
   const n = items.length;
   const startTime = performance.now();
   
@@ -319,7 +340,7 @@ function displayResults() {
     </div>
     <div class="metric-card">
       <h6 class="text-secondary">Total Berat</h6>
-      <h3 class="mb-0">${greedyResult.weight} / ${capacity.value}</h3>
+      <h3 class="mb-0">${greedyResult.weight} / ${document.getElementById('capacity').value}</h3>
     </div>
     <div class="metric-card">
       <h6 class="text-primary">Waktu Eksekusi</h6>
@@ -341,7 +362,7 @@ function displayResults() {
     </div>
     <div class="metric-card">
       <h6 class="text-secondary">Total Berat</h6>
-      <h3 class="mb-0">${bruteResult.weight} / ${capacity.value}</h3>
+      <h3 class="mb-0">${bruteResult.weight} / ${document.getElementById('capacity').value}</h3>
     </div>
     <div class="metric-card">
       <h6 class="text-primary">Waktu Eksekusi</h6>
@@ -374,8 +395,8 @@ function displayResults() {
 function displayComparison() {
   document.getElementById('comparisonSection').style.display = 'block';
   
-  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
-  const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
+  const accuracy = bruteResult.value > 0 ? ((greedyResult.value / bruteResult.value) * 100).toFixed(2) : 0;
+  const speedup = greedyResult.time > 0 ? (bruteResult.time / greedyResult.time).toFixed(2) : 0;
   
   const valueWinner = greedyResult.value >= bruteResult.value ? 'greedy' : 'brute';
   const timeWinner = greedyResult.time <= bruteResult.time ? 'greedy' : 'brute';
@@ -425,128 +446,4 @@ function displayDetailedOutput() {
   output += '             HASIL PERBANDINGAN ALGORITMA KNAPSACK\n';
   output += '═══════════════════════════════════════════════════════════\n\n';
   
-  output += `Kapasitas Knapsack: ${capacity.value}\n`;
-  output += `Jumlah Item Tersedia: ${items.length}\n\n`;
-  
-  output += '───────────────────────────────────────────────────────────\n';
-  output += 'GREEDY ALGORITHM (Rasio Nilai/Berat)\n';
-  output += '───────────────────────────────────────────────────────────\n';
-  output += `Total Nilai      : ${greedyResult.value}\n`;
-  output += `Total Berat      : ${greedyResult.weight}\n`;
-  output += `Waktu Eksekusi   : ${greedyResult.time} ms\n`;
-  output += `Item Terpilih    : ${greedyResult.items.length} items\n`;
-  greedyResult.items.forEach((item, i) => {
-    output += `  ${i+1}. ${item.name} (Berat: ${item.weight}, Nilai: ${item.value}, Rasio: ${(item.value/item.weight).toFixed(2)})\n`;
-  });
-  
-  output += '\n───────────────────────────────────────────────────────────\n';
-  output += 'BRUTE FORCE ALGORITHM (Solusi Optimal)\n';
-  output += '───────────────────────────────────────────────────────────\n';
-  output += `Total Nilai      : ${bruteResult.value}\n`;
-  output += `Total Berat      : ${bruteResult.weight}\n`;
-  output += `Waktu Eksekusi   : ${bruteResult.time} ms\n`;
-  output += `Item Terpilih    : ${bruteResult.items.length} items\n`;
-  bruteResult.items.forEach((item, i) => {
-    output += `  ${i+1}. ${item.name} (Berat: ${item.weight}, Nilai: ${item.value})\n`;
-  });
-  
-  if (bruteResult.time > 0 && greedyResult.time > 0) {
-    output += '\n───────────────────────────────────────────────────────────\n';
-    output += 'ANALISIS PERBANDINGAN\n';
-    output += '───────────────────────────────────────────────────────────\n';
-    const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
-    const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
-    output += `Akurasi Greedy   : ${accuracy}% dari solusi optimal\n`;
-    output += `Speedup          : ${speedup}x lebih cepat\n`;
-    output += `Selisih Nilai    : ${Math.abs(bruteResult.value - greedyResult.value)}\n`;
-    output += `Selisih Berat    : ${Math.abs(bruteResult.weight - greedyResult.weight)}\n`;
-  }
-  
-  output += '\n═══════════════════════════════════════════════════════════\n';
-  
-  document.getElementById('detailOutput').textContent = output;
-}
-
-// Render Charts
-function renderCharts() {
-  document.getElementById('chartSection').style.display = 'flex';
-  
-  // Chart 1: Value & Weight Comparison
-  const ctx1 = document.getElementById('resultChart');
-  if (chart1) chart1.destroy();
-  
-  chart1 = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: ['Greedy', 'Brute Force'],
-      datasets: [
-        {
-          label: 'Total Nilai',
-          data: [greedyResult.value, bruteResult.value],
-          backgroundColor: 'rgba(40, 167, 69, 0.8)',
-          borderColor: 'rgba(40, 167, 69, 1)',
-          borderWidth: 2
-        },
-        {
-          label: 'Total Berat',
-          data: [greedyResult.weight, bruteResult.weight],
-          backgroundColor: 'rgba(255, 193, 7, 0.8)',
-          borderColor: 'rgba(255, 193, 7, 1)',
-          borderWidth: 2
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        title: { display: false }
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
-  
-  // Chart 2: Efficiency (Time & Accuracy)
-  const ctx2 = document.getElementById('efficiencyChart');
-  if (chart2) chart2.destroy();
-  
-  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
-  
-  chart2 = new Chart(ctx2, {
-    type: 'line',
-    data: {
-      labels: ['Waktu Eksekusi (ms)', 'Akurasi (%)'],
-      datasets: [
-        {
-          label: 'Greedy',
-          data: [parseFloat(greedyResult.time), parseFloat(accuracy)],
-          borderColor: 'rgba(40, 167, 69, 1)',
-          backgroundColor: 'rgba(40, 167, 69, 0.2)',
-          tension: 0.4
-        },
-        {
-          label: 'Brute Force',
-          data: [parseFloat(bruteResult.time), 100],
-          borderColor: 'rgba(255, 193, 7, 1)',
-          backgroundColor: 'rgba(255, 193, 7, 0.2)',
-          tension: 0.4
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' }
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
-}
-</script>
-
-</body>
-</html>
+  output += `Kapasitas Knapsack:
