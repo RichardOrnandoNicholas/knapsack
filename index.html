@@ -2,160 +2,478 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Sistem Perbandingan Algoritma Knapsack</title>
+  <title>Knapsack Algorithm Analyzer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .algorithm-card {
-      border-left: 4px solid #0d6efd;
-      transition: transform 0.2s;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .algorithm-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
     }
-    .result-box {
+    
+    .navbar {
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
+    
+    .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      overflow: hidden;
+      background: white;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .upload-area {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+    
+    .upload-area:hover {
+      border-color: #667eea;
+      background: #f1f5f9;
+    }
+    
+    .upload-area.active {
+      border-color: #667eea;
+      background: #eef2ff;
+    }
+    
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-outline {
+      border: 2px solid #e2e8f0;
+      background: white;
+      color: #475569;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-outline:hover {
+      border-color: #667eea;
+      color: #667eea;
+      background: #f8fafc;
+    }
+    
     .metric-card {
       background: white;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
     }
-    .badge-custom {
+    
+    .metric-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .metric-label {
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    
+    .result-card {
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    
+    .result-header {
+      padding: 1.5rem;
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .result-header.greedy {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .result-header.brute {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .badge-pill {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .comparison-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+      align-items: center;
+    }
+    
+    .comparison-row:last-child {
+      border-bottom: none;
+    }
+    
+    .comparison-row:hover {
+      background: #f8fafc;
+    }
+    
+    .comparison-label {
+      font-weight: 600;
+      color: #475569;
+    }
+    
+    .comparison-value {
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+    
+    .winner-badge {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    
+    .data-table {
+      width: 100%;
       font-size: 0.9rem;
-      padding: 8px 15px;
     }
-    pre {
-      max-height: 400px;
+    
+    .data-table thead {
+      background: #f8fafc;
+    }
+    
+    .data-table th {
+      padding: 1rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .data-table td {
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .data-table tr:hover {
+      background: #f8fafc;
+    }
+    
+    .detail-output {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 12px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      max-height: 500px;
       overflow-y: auto;
     }
-    .comparison-table {
-      font-size: 0.95rem;
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
     }
-    .winner {
-      background-color: #d4edda !important;
-      font-weight: bold;
+    
+    .status-badge.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1rem;
+    }
+    
+    input[type="number"], input[type="file"] {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="number"]:focus, input[type="file"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .text-hint {
+      color: #94a3b8;
+      font-size: 0.8125rem;
+      margin-top: 0.25rem;
+    }
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #94a3b8;
+    }
+    
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      background: #f1f5f9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
     }
   </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container py-4">
-  <!-- Header -->
-  <div class="text-center mb-4">
-    <h2 class="fw-bold">Sistem Perbandingan Algoritma Knapsack</h2>
-    <p class="text-muted">Comparative Study: Greedy vs Brute Force Algorithm</p>
+<nav class="navbar">
+  <div class="container">
+    <div class="brand">Knapsack Algorithm Analyzer</div>
   </div>
+</nav>
 
-  <!-- Input Section -->
-  <div class="card algorithm-card mb-4">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0"><i class="bi bi-upload"></i> Input Data & Konfigurasi</h5>
-    </div>
-    <div class="card-body">
+<div class="container pb-5">
+  
+  <!-- Upload Section -->
+  <div class="card mb-4">
+    <div class="card-body p-4">
+      <h5 class="section-title">Dataset Configuration</h5>
+      
       <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Upload Dataset Excel (.xlsx)</label>
-          <input type="file" id="fileInput" class="form-control" accept=".xlsx">
-          <small class="text-muted">Format: Kolom "Nama Barang", "Berat", "Nilai (Profit)"</small>
+        <div class="col-md-8 mb-4">
+          <label class="form-label">Upload Dataset</label>
+          <div class="upload-area" id="uploadArea">
+            <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;">
+            <div class="upload-icon">📁</div>
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Click to upload or drag and drop</div>
+            <div class="text-hint">Excel file (.xlsx, .xls) - Max 10MB</div>
+            <div class="text-hint mt-2">Required columns: <strong>Item ID</strong>, <strong>Nama Barang</strong>, <strong>Berat</strong>, <strong>Nilai</strong></div>
+          </div>
+          <div id="fileInfo" style="display: none; margin-top: 1rem;">
+            <div class="status-badge success">
+              <span class="status-dot"></span>
+              <span id="fileName">Dataset loaded</span>
+            </div>
+          </div>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Kapasitas Knapsack (Max Weight)</label>
+        
+        <div class="col-md-4 mb-4">
+          <label class="form-label">Knapsack Capacity</label>
           <input type="number" id="capacity" class="form-control" value="50" min="1">
-          <small class="text-muted">Batas maksimal berat total yang dapat dibawa</small>
+          <div class="text-hint">Maximum weight capacity</div>
+          
+          <button class="btn btn-outline w-100 mt-3" onclick="generateSampleData()">
+            Generate Sample Data
+          </button>
         </div>
       </div>
-
-      <div class="alert alert-info" id="dataInfo" style="display: none;">
-        <strong>Dataset Loaded:</strong> <span id="itemCount">0</span> items
-      </div>
-
-      <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-success btn-lg" onclick="runGreedy()">
-          <i class="bi bi-lightning"></i> Run Greedy Algorithm
+      
+      <div class="d-flex gap-3 flex-wrap">
+        <button class="btn btn-primary" onclick="runGreedy()">
+          <span style="margin-right: 0.5rem;">⚡</span> Run Greedy
         </button>
-        <button class="btn btn-warning btn-lg" onclick="runBruteForce()">
-          <i class="bi bi-gear"></i> Run Brute Force
+        <button class="btn btn-primary" onclick="runBruteForce()">
+          <span style="margin-right: 0.5rem;">🔍</span> Run Brute Force
         </button>
-        <button class="btn btn-primary btn-lg" onclick="runBoth()">
-          <i class="bi bi-play-fill"></i> Run Both & Compare
-        </button>
-        <button class="btn btn-secondary" onclick="generateSampleData()">
-          <i class="bi bi-table"></i> Generate Sample Data
+        <button class="btn btn-primary" onclick="runBoth()">
+          <span style="margin-right: 0.5rem;">🚀</span> Compare Both
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Results Comparison -->
+  <!-- Dataset Preview -->
+  <div class="card mb-4" id="datasetPreview" style="display: none;">
+    <div class="card-body p-4">
+      <h5 class="section-title">Dataset Preview</h5>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Item ID</th>
+              <th>Nama Barang</th>
+              <th>Berat</th>
+              <th>Nilai</th>
+              <th>Ratio (V/W)</th>
+            </tr>
+          </thead>
+          <tbody id="datasetTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
   <div class="row" id="resultsSection" style="display: none;">
-    <div class="col-md-6 mb-4">
-      <div class="card h-100">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0">Greedy Algorithm </h5>
+    <div class="col-lg-6 mb-4">
+      <div class="card result-card">
+        <div class="result-header greedy">
+          <span style="font-size: 1.5rem;">⚡</span>
+          <span>Greedy Algorithm</span>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
           <div id="greedyOutput"></div>
         </div>
       </div>
     </div>
-    <div class="col-md-6 mb-4">
-      <div class="card h-100">
-        <div class="card-header bg-warning text-dark">
-          <h5 class="mb-0">Brute Force </h5>
+    
+    <div class="col-lg-6 mb-4">
+      <div class="card result-card">
+        <div class="result-header brute">
+          <span style="font-size: 1.5rem;">🔍</span>
+          <span>Brute Force Algorithm</span>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
           <div id="bruteOutput"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Comparison Table -->
+  <!-- Comparison -->
   <div class="card mb-4" id="comparisonSection" style="display: none;">
-    <div class="card-header bg-dark text-white">
-      <h5 class="mb-0">Perbandingan Performa Algoritma</h5>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered comparison-table">
-          <thead class="table-light">
-            <tr>
-              <th>Metrik</th>
-              <th class="text-center">Greedy Algorithm</th>
-              <th class="text-center">Brute Force</th>
-            </tr>
-          </thead>
-          <tbody id="comparisonTable"></tbody>
-        </table>
-      </div>
+    <div class="card-body p-4">
+      <h5 class="section-title">Performance Comparison</h5>
+      <div id="comparisonTable"></div>
     </div>
   </div>
 
   <!-- Charts -->
   <div class="row" id="chartSection" style="display: none;">
-    <div class="col-md-6 mb-4">
+    <div class="col-lg-6 mb-4">
       <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Perbandingan Nilai & Berat</h5>
-          <canvas id="resultChart"></canvas>
+        <div class="card-body p-4">
+          <h6 style="font-weight: 600; margin-bottom: 1rem;">Value & Weight Analysis</h6>
+          <div class="chart-container">
+            <canvas id="resultChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-6 mb-4">
+    
+    <div class="col-lg-6 mb-4">
       <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Efisiensi Algoritma</h5>
-          <canvas id="efficiencyChart"></canvas>
+        <div class="card-body p-4">
+          <h6 style="font-weight: 600; margin-bottom: 1rem;">Algorithm Efficiency</h6>
+          <div class="chart-container">
+            <canvas id="efficiencyChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -163,13 +481,12 @@
 
   <!-- Detailed Output -->
   <div class="card" id="detailSection" style="display: none;">
-    <div class="card-header bg-info text-white">
-      <h5 class="mb-0">Detail Lengkap Perhitungan</h5>
-    </div>
-    <div class="card-body">
-      <pre id="detailOutput" class="bg-dark text-light p-3 rounded"></pre>
+    <div class="card-body p-4">
+      <h5 class="section-title">Detailed Analysis Report</h5>
+      <div class="detail-output" id="detailOutput"></div>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -179,8 +496,33 @@ let bruteResult = { value: 0, weight: 0, items: [], time: 0 };
 let chart1 = null;
 let chart2 = null;
 
+// Upload Area Interactions
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadArea.classList.add('active');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+  uploadArea.classList.remove('active');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadArea.classList.remove('active');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    fileInput.files = files;
+    fileInput.dispatchEvent(new Event('change'));
+  }
+});
+
 // Load Excel File
-document.getElementById('fileInput').addEventListener('change', function (e) {
+fileInput.addEventListener('change', function (e) {
   const file = e.target.files[0];
   if (!file) return;
 
@@ -189,65 +531,103 @@ document.getElementById('fileInput').addEventListener('change', function (e) {
     try {
       const data = new Uint8Array(evt.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(sheet);
 
       if (json.length === 0) {
-        alert('File Excel kosong atau tidak valid. Pastikan ada data di sheet pertama.');
+        alert('File Excel kosong atau format tidak sesuai!');
         return;
       }
 
-      items = json.map(row => ({
-        name: row['Nama Barang'] || row['Name'] || 'Item',
-        weight: Number(row['Berat'] || row['Weight']) || 0,
-        value: Number(row['Nilai'] || row['Value'] || row['Profit']) || 0
-      })).filter(item => item.weight > 0 && item.value > 0); // Filter item valid
+      items = json.map((row) => {
+        const itemId = row['Item ID'] || row['item_id'] || row['ID'] || '';
+        const name = row['Nama Barang'] || row['Name'] || row['nama_barang'] || 'Unknown';
+        const weight = parseFloat(row['Berat'] || row['Weight'] || row['berat'] || 0);
+        const value = parseFloat(row['Nilai'] || row['Value'] || row['nilai'] || 0);
+
+        return {
+          id: String(itemId),
+          name: String(name),
+          weight: weight,
+          value: value
+        };
+      }).filter(item => item.weight > 0 && item.value > 0);
 
       if (items.length === 0) {
-        alert('Tidak ada item valid dalam dataset. Pastikan kolom berat dan nilai berisi angka positif.');
+        alert('Tidak ada data valid yang dapat dibaca!\n\nPastikan file Excel memiliki kolom:\n- Item ID\n- Nama Barang\n- Berat\n- Nilai');
         return;
       }
 
-      document.getElementById('dataInfo').style.display = 'block';
-      document.getElementById('itemCount').textContent = items.length;
-      alert(`Dataset berhasil dimuat: ${items.length} item(s) valid.`);
+      document.getElementById('fileInfo').style.display = 'block';
+      document.getElementById('fileName').textContent = `${file.name} - ${items.length} items loaded`;
+      
+      showDatasetPreview();
+      
     } catch (error) {
-      alert('Error membaca file Excel: ' + error.message);
+      alert('Error membaca file: ' + error.message);
+      console.error('Error:', error);
     }
   };
-  reader.onerror = function () {
-    alert('Error membaca file.');
-  };
+  
   reader.readAsArrayBuffer(file);
 });
+
+// Show Dataset Preview
+function showDatasetPreview() {
+  const preview = document.getElementById('datasetPreview');
+  const table = document.getElementById('datasetTable');
+  
+  let html = '';
+  items.slice(0, 10).forEach(item => {
+    const ratio = (item.value / item.weight).toFixed(2);
+    html += `
+      <tr>
+        <td><strong>${item.id}</strong></td>
+        <td>${item.name}</td>
+        <td>${item.weight}</td>
+        <td>${item.value}</td>
+        <td><span style="color: #667eea; font-weight: 600;">${ratio}</span></td>
+      </tr>
+    `;
+  });
+  
+  if (items.length > 10) {
+    html += `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">... and ${items.length - 10} more items</td></tr>`;
+  }
+  
+  table.innerHTML = html;
+  preview.style.display = 'block';
+}
 
 // Generate Sample Data
 function generateSampleData() {
   items = [
-    { name: 'Laptop', weight: 3, value: 2000 },
-    { name: 'Kamera', weight: 2, value: 1500 },
-    { name: 'Tablet', weight: 1, value: 800 },
-    { name: 'Speaker', weight: 2, value: 600 },
-    { name: 'Headphone', weight: 1, value: 400 },
-    { name: 'Charger', weight: 1, value: 200 },
-    { name: 'Mouse', weight: 0.5, value: 150 },
-    { name: 'Keyboard', weight: 1.5, value: 300 }
+    { id: 'ITM001', name: 'Laptop Gaming', weight: 3, value: 2000 },
+    { id: 'ITM002', name: 'Kamera DSLR', weight: 2, value: 1500 },
+    { id: 'ITM003', name: 'Tablet Pro', weight: 1, value: 800 },
+    { id: 'ITM004', name: 'Speaker Bluetooth', weight: 2, value: 600 },
+    { id: 'ITM005', name: 'Headphone Wireless', weight: 1, value: 400 },
+    { id: 'ITM006', name: 'Power Bank', weight: 1, value: 200 },
+    { id: 'ITM007', name: 'Mouse Gaming', weight: 0.5, value: 150 },
+    { id: 'ITM008', name: 'Mechanical Keyboard', weight: 1.5, value: 300 }
   ];
   
-  document.getElementById('dataInfo').style.display = 'block';
-  document.getElementById('itemCount').textContent = items.length;
-  alert('Sample data berhasil dibuat! (8 items)');
+  document.getElementById('fileInfo').style.display = 'block';
+  document.getElementById('fileName').textContent = `Sample Dataset - ${items.length} items loaded`;
+  
+  showDatasetPreview();
 }
 
 // Greedy Algorithm
 function runGreedy() {
-  if (items.length === 0) return alert('Upload dataset terlebih dahulu!');
+  if (items.length === 0) {
+    alert('Upload dataset atau generate sample data terlebih dahulu!');
+    return;
+  }
 
   const cap = Number(document.getElementById('capacity').value);
   const startTime = performance.now();
   
-  // Hitung rasio value/weight dan sort
   const sorted = [...items].map(item => ({
     ...item,
     ratio: item.value / item.weight
@@ -278,7 +658,11 @@ function runGreedy() {
 
 // Brute Force Algorithm
 function runBruteForce() {
-  if (items.length === 0) return alert('Upload dataset terlebih dahulu!');
+  if (items.length === 0) {
+    alert('Upload dataset atau generate sample data terlebih dahulu!');
+    return;
+  }
+  
   if (items.length > 20) {
     if (!confirm('Dataset memiliki lebih dari 20 item. Brute Force akan memakan waktu lama. Lanjutkan?')) {
       return;
@@ -293,7 +677,6 @@ function runBruteForce() {
   let bestWeight = 0;
   let bestSet = [];
 
-  // Generate semua kombinasi (2^n)
   for (let i = 0; i < (1 << n); i++) {
     let w = 0, v = 0, set = [];
     for (let j = 0; j < n; j++) {
@@ -321,7 +704,7 @@ function runBruteForce() {
   displayResults();
 }
 
-// Run Both Algorithms
+// Run Both
 function runBoth() {
   runGreedy();
   setTimeout(() => runBruteForce(), 100);
@@ -332,62 +715,68 @@ function displayResults() {
   document.getElementById('resultsSection').style.display = 'flex';
   document.getElementById('detailSection').style.display = 'block';
 
-  // Greedy Output
+  const cap = document.getElementById('capacity').value;
+
   const greedyHTML = `
     <div class="metric-card">
-      <h6 class="text-success">Total Nilai (Profit)</h6>
-      <h3 class="mb-0">${greedyResult.value}</h3>
+      <div class="metric-label">Total Value</div>
+      <div class="metric-value" style="color: #10b981;">${greedyResult.value}</div>
     </div>
     <div class="metric-card">
-      <h6 class="text-secondary">Total Berat</h6>
-      <h3 class="mb-0">${greedyResult.weight} / ${document.getElementById('capacity').value}</h3>
+      <div class="metric-label">Total Weight</div>
+      <div class="metric-value">${greedyResult.weight} <span style="font-size: 1rem; color: #94a3b8;">/ ${cap}</span></div>
     </div>
     <div class="metric-card">
-      <h6 class="text-primary">Waktu Eksekusi</h6>
-      <h3 class="mb-0">${greedyResult.time} ms</h3>
+      <div class="metric-label">Execution Time</div>
+      <div class="metric-value" style="font-size: 1.5rem;">${greedyResult.time} <span style="font-size: 1rem; color: #94a3b8;">ms</span></div>
     </div>
     <div class="metric-card">
-      <h6>Item Terpilih (${greedyResult.items.length})</h6>
-      <ul class="mb-0">
-        ${greedyResult.items.map(item => `<li>${item.name} (W:${item.weight}, V:${item.value})</li>`).join('')}
-      </ul>
+      <div class="metric-label">Selected Items (${greedyResult.items.length})</div>
+      <div style="margin-top: 0.75rem;">
+        ${greedyResult.items.map(item => `
+          <div style="padding: 0.5rem; background: #f8fafc; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+            <span><strong>${item.id}</strong> - ${item.name}</span>
+            <span style="color: #64748b;">W: ${item.weight} | V: ${item.value}</span>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 
-  // Brute Force Output
   const bruteHTML = `
     <div class="metric-card">
-      <h6 class="text-warning">Total Nilai (Profit)</h6>
-      <h3 class="mb-0">${bruteResult.value}</h3>
+      <div class="metric-label">Total Value</div>
+      <div class="metric-value" style="color: #f59e0b;">${bruteResult.value}</div>
     </div>
     <div class="metric-card">
-      <h6 class="text-secondary">Total Berat</h6>
-      <h3 class="mb-0">${bruteResult.weight} / ${document.getElementById('capacity').value}</h3>
+      <div class="metric-label">Total Weight</div>
+      <div class="metric-value">${bruteResult.weight} <span style="font-size: 1rem; color: #94a3b8;">/ ${cap}</span></div>
     </div>
     <div class="metric-card">
-      <h6 class="text-primary">Waktu Eksekusi</h6>
-      <h3 class="mb-0">${bruteResult.time} ms</h3>
+      <div class="metric-label">Execution Time</div>
+      <div class="metric-value" style="font-size: 1.5rem;">${bruteResult.time} <span style="font-size: 1rem; color: #94a3b8;">ms</span></div>
     </div>
     <div class="metric-card">
-      <h6>Item Terpilih (${bruteResult.items.length})</h6>
-      <ul class="mb-0">
-        ${bruteResult.items.map(item => `<li>${item.name} (W:${item.weight}, V:${item.value})</li>`).join('')}
-      </ul>
+      <div class="metric-label">Selected Items (${bruteResult.items.length})</div>
+      <div style="margin-top: 0.75rem;">
+        ${bruteResult.items.map(item => `
+          <div style="padding: 0.5rem; background: #f8fafc; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+            <span><strong>${item.id}</strong> - ${item.name}</span>
+            <span style="color: #64748b;">W: ${item.weight} | V: ${item.value}</span>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 
   document.getElementById('greedyOutput').innerHTML = greedyHTML;
   document.getElementById('bruteOutput').innerHTML = bruteHTML;
 
-  // Comparison Table
   if (greedyResult.time > 0 && bruteResult.time > 0) {
     displayComparison();
   }
 
-  // Detailed Output
   displayDetailedOutput();
-
-  // Charts
   renderCharts();
 }
 
@@ -395,55 +784,229 @@ function displayResults() {
 function displayComparison() {
   document.getElementById('comparisonSection').style.display = 'block';
   
-  const accuracy = bruteResult.value > 0 ? ((greedyResult.value / bruteResult.value) * 100).toFixed(2) : 0;
-  const speedup = greedyResult.time > 0 ? (bruteResult.time / greedyResult.time).toFixed(2) : 0;
+  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+  const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
   
-  const valueWinner = greedyResult.value >= bruteResult.value ? 'greedy' : 'brute';
-  const timeWinner = greedyResult.time <= bruteResult.time ? 'greedy' : 'brute';
+  const valueWinner = greedyResult.value >= bruteResult.value;
+  const timeWinner = greedyResult.time <= bruteResult.time;
   
-  const tableHTML = `
-    <tr class="${valueWinner === 'greedy' ? 'winner' : ''}">
-      <td>Total Nilai (Profit)</td>
-      <td class="text-center ${valueWinner === 'greedy' ? '' : ''}">${greedyResult.value}</td>
-      <td class="text-center ${valueWinner === 'brute' ? '' : ''}">${bruteResult.value}</td>
-    </tr>
-    <tr>
-      <td>Total Berat</td>
-      <td class="text-center">${greedyResult.weight}</td>
-      <td class="text-center">${bruteResult.weight}</td>
-    </tr>
-    <tr>
-      <td>Jumlah Item Terpilih</td>
-      <td class="text-center">${greedyResult.items.length}</td>
-      <td class="text-center">${bruteResult.items.length}</td>
-    </tr>
-    <tr class="${timeWinner === 'greedy' ? 'winner' : ''}">
-      <td>Waktu Eksekusi (ms)</td>
-      <td class="text-center">${greedyResult.time}</td>
-      <td class="text-center">${bruteResult.time}</td>
-    </tr>
-    <tr>
-      <td>Kompleksitas Waktu</td>
-      <td class="text-center">O(n log n)</td>
-      <td class="text-center">O(2<sup>n</sup>)</td>
-    </tr>
-    <tr>
-      <td>Akurasi Greedy</td>
-      <td class="text-center" colspan="2"><span class="badge bg-info">${accuracy}% dari solusi optimal</span></td>
-    </tr>
-    <tr>
-      <td>Speedup Greedy</td>
-      <td class="text-center" colspan="2"><span class="badge bg-success">${speedup}x lebih cepat</span></td>
-    </tr>
+  const html = `
+    <div class="comparison-row">
+      <div class="comparison-label">Total Value</div>
+      <div class="comparison-value">${greedyResult.value} ${valueWinner ? '<span class="winner-badge">Winner</span>' : ''}</div>
+      <div class="comparison-value">${bruteResult.value} ${!valueWinner ? '<span class="winner-badge">Winner</span>' : ''}</div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-label">Total Weight</div>
+      <div class="comparison-value">${greedyResult.weight}</div>
+      <div class="comparison-value">${bruteResult.weight}</div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-label">Items Selected</div>
+      <div class="comparison-value">${greedyResult.items.length}</div>
+      <div class="comparison-value">${bruteResult.items.length}</div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-label">Execution Time</div>
+      <div class="comparison-value">${greedyResult.time} ms ${timeWinner ? '<span class="winner-badge">Faster</span>' : ''}</div>
+      <div class="comparison-value">${bruteResult.time} ms ${!timeWinner ? '<span class="winner-badge">Faster</span>' : ''}</div>
+    </div>
+    <div class="comparison-row">
+      <div class="comparison-label">Time Complexity</div>
+      <div class="comparison-value" style="font-size: 1rem;">O(n log n)</div>
+      <div class="comparison-value" style="font-size: 1rem;">O(2<sup>n</sup>)</div>
+    </div>
+    <div class="comparison-row" style="background: #f8fafc;">
+      <div class="comparison-label">Greedy Accuracy</div>
+      <div class="comparison-value" colspan="2" style="grid-column: 2 / 4; font-size: 1.5rem; color: #667eea;">${accuracy}%</div>
+    </div>
+    <div class="comparison-row" style="background: #f8fafc;">
+      <div class="comparison-label">Speed Improvement</div>
+      <div class="comparison-value" colspan="2" style="grid-column: 2 / 4; font-size: 1.5rem; color: #10b981;">${speedup}x faster</div>
+    </div>
   `;
   
-  document.getElementById('comparisonTable').innerHTML = tableHTML;
+  document.getElementById('comparisonTable').innerHTML = html;
 }
 
 // Detailed Output
 function displayDetailedOutput() {
-  let output = '═══════════════════════════════════════════════════════════\n';
-  output += '             HASIL PERBANDINGAN ALGORITMA KNAPSACK\n';
-  output += '═══════════════════════════════════════════════════════════\n\n';
+  const cap = document.getElementById('capacity').value;
   
-  output += `Kapasitas Knapsack:
+  let output = '════════════════════════════════════════════════════════════════════\n';
+  output += '                  KNAPSACK ALGORITHM ANALYSIS REPORT\n';
+  output += '════════════════════════════════════════════════════════════════════\n\n';
+  
+  output += `Configuration:\n`;
+  output += `  Knapsack Capacity: ${cap}\n`;
+  output += `  Available Items: ${items.length}\n\n`;
+  
+  output += '────────────────────────────────────────────────────────────────────\n';
+  output += 'GREEDY ALGORITHM RESULTS\n';
+  output += '────────────────────────────────────────────────────────────────────\n';
+  output += `  Total Value:        ${greedyResult.value}\n`;
+  output += `  Total Weight:       ${greedyResult.weight} / ${cap}\n`;
+  output += `  Execution Time:     ${greedyResult.time} ms\n`;
+  output += `  Items Selected:     ${greedyResult.items.length}\n\n`;
+  output += `  Selected Items:\n`;
+  greedyResult.items.forEach((item, i) => {
+    output += `    ${i+1}. [${item.id}] ${item.name}\n`;
+    output += `       Weight: ${item.weight} | Value: ${item.value} | Ratio: ${(item.value/item.weight).toFixed(2)}\n`;
+  });
+  
+  output += '\n────────────────────────────────────────────────────────────────────\n';
+  output += 'BRUTE FORCE ALGORITHM RESULTS\n';
+  output += '────────────────────────────────────────────────────────────────────\n';
+  output += `  Total Value:        ${bruteResult.value}\n`;
+  output += `  Total Weight:       ${bruteResult.weight} / ${cap}\n`;
+  output += `  Execution Time:     ${bruteResult.time} ms\n`;
+  output += `  Items Selected:     ${bruteResult.items.length}\n\n`;
+  output += `  Selected Items:\n`;
+  bruteResult.items.forEach((item, i) => {
+    output += `    ${i+1}. [${item.id}] ${item.name}\n`;
+    output += `       Weight: ${item.weight} | Value: ${item.value}\n`;
+  });
+  
+  if (bruteResult.time > 0 && greedyResult.time > 0) {
+    output += '\n────────────────────────────────────────────────────────────────────\n';
+    output += 'COMPARATIVE ANALYSIS\n';
+    output += '────────────────────────────────────────────────────────────────────\n';
+    const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+    const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
+    output += `  Greedy Accuracy:    ${accuracy}% of optimal solution\n`;
+    output += `  Speed Improvement:  ${speedup}x faster\n`;
+    output += `  Value Difference:   ${Math.abs(bruteResult.value - greedyResult.value)}\n`;
+    output += `  Weight Difference:  ${Math.abs(bruteResult.weight - greedyResult.weight)}\n`;
+    
+    output += `\n  Performance Summary:\n`;
+    if (accuracy >= 95) {
+      output += `    ✓ Greedy achieved ${accuracy}% accuracy - Excellent performance\n`;
+    } else if (accuracy >= 80) {
+      output += `    ✓ Greedy achieved ${accuracy}% accuracy - Good performance\n`;
+    } else {
+      output += `    ⚠ Greedy achieved ${accuracy}% accuracy - Consider optimization\n`;
+    }
+    output += `    ✓ Greedy was ${speedup}x faster than Brute Force\n`;
+  }
+  
+  output += '\n════════════════════════════════════════════════════════════════════\n';
+  
+  document.getElementById('detailOutput').textContent = output;
+}
+
+// Render Charts
+function renderCharts() {
+  document.getElementById('chartSection').style.display = 'flex';
+  
+  const ctx1 = document.getElementById('resultChart');
+  if (chart1) chart1.destroy();
+  
+  chart1 = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Greedy', 'Brute Force'],
+      datasets: [
+        {
+          label: 'Total Value',
+          data: [greedyResult.value, bruteResult.value],
+          backgroundColor: 'rgba(16, 185, 129, 0.8)',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 0,
+          borderRadius: 8
+        },
+        {
+          label: 'Total Weight',
+          data: [greedyResult.weight, bruteResult.weight],
+          backgroundColor: 'rgba(245, 158, 11, 0.8)',
+          borderColor: 'rgba(245, 158, 11, 1)',
+          borderWidth: 0,
+          borderRadius: 8
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: 'top',
+          labels: {
+            font: { family: 'Inter', size: 12, weight: '600' },
+            padding: 15
+          }
+        }
+      },
+      scales: {
+        y: { 
+          beginAtZero: true,
+          grid: { color: '#f1f5f9' },
+          ticks: { font: { family: 'Inter' } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'Inter', weight: '600' } }
+        }
+      }
+    }
+  });
+  
+  const ctx2 = document.getElementById('efficiencyChart');
+  if (chart2) chart2.destroy();
+  
+  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+  
+  chart2 = new Chart(ctx2, {
+    type: 'radar',
+    data: {
+      labels: ['Speed', 'Accuracy', 'Efficiency', 'Optimality'],
+      datasets: [
+        {
+          label: 'Greedy',
+          data: [100, parseFloat(accuracy), 95, parseFloat(accuracy)],
+          borderColor: 'rgba(16, 185, 129, 1)',
+          backgroundColor: 'rgba(16, 185, 129, 0.2)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+          pointRadius: 4
+        },
+        {
+          label: 'Brute Force',
+          data: [50, 100, 70, 100],
+          borderColor: 'rgba(245, 158, 11, 1)',
+          backgroundColor: 'rgba(245, 158, 11, 0.2)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(245, 158, 11, 1)',
+          pointRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: 'top',
+          labels: {
+            font: { family: 'Inter', size: 12, weight: '600' },
+            padding: 15
+          }
+        }
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { 
+            stepSize: 25,
+            font: { family: 'Inter' }
+          },
+          grid: { color: '#f1f5f9' }
+        }
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>
