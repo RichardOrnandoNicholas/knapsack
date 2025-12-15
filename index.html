@@ -179,36 +179,27 @@ let bruteResult = { value: 0, weight: 0, items: [], time: 0 };
 let chart1 = null;
 let chart2 = null;
 
-const fileInput = document.getElementById('fileInput');
-const capacity = document.getElementById('capacity');
-
 // Load Excel File
-fileInput.addEventListener('change', function (e) {
-  const file = e.target.files[0];
-  if (!file) return;
 
+fileInput.addEventListener('change', function (e) {
   const reader = new FileReader();
   reader.onload = function (evt) {
     const data = new Uint8Array(evt.target.result);
     const workbook = XLSX.read(data, { type: 'array' });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const json = XLSX.utils.sheet_to_json(sheet);
 
     items = json.map(row => ({
-      name: row['Nama Barang'] || row['Name'],
-      weight: parseFloat(row['Berat'] || row['Weight']),
-      value: parseFloat(row['Nilai'] || row['Value'] || row['Profit'])
-    })).filter(item => !isNaN(item.weight) && !isNaN(item.value));
+      name: row['Nama Barang'] || row['Name'] || 'Item',
+      weight: Number(row['Berat'] || row['Weight']) || 0,
+      value: Number(row['Nilai'] || row['Value'] || row['Profit']) || 0
+    }));
 
     document.getElementById('dataInfo').style.display = 'block';
     document.getElementById('itemCount').textContent = items.length;
   };
-
-  reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(e.target.files[0]);
 });
-
 
 // Generate Sample Data
 function generateSampleData() {
