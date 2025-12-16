@@ -9,7 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -27,17 +27,19 @@
     .navbar {
       background: white;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      padding: 1rem 0;
-      margin-bottom: 2rem;
+      padding: 1.25rem 0;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid #e2e8f0;
     }
     
     .brand {
-      font-size: 1.5rem;
+      font-size: 1.625rem;
       font-weight: 700;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      letter-spacing: -0.5px;
     }
     
     .card {
@@ -56,11 +58,12 @@
     .upload-area {
       border: 2px dashed #cbd5e1;
       border-radius: 12px;
-      padding: 2rem;
+      padding: 2.5rem;
       text-align: center;
       transition: all 0.3s ease;
       background: #f8fafc;
       cursor: pointer;
+      position: relative;
     }
     
     .upload-area:hover {
@@ -71,44 +74,48 @@
     .upload-area.active {
       border-color: #667eea;
       background: #eef2ff;
+      border-width: 3px;
     }
     
     .upload-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 1rem;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1.25rem;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 24px;
+      font-size: 28px;
+      font-weight: 700;
     }
     
     .btn-primary {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 1.75rem;
       border-radius: 10px;
       font-weight: 600;
       transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      font-size: 0.9375rem;
     }
     
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
     
     .btn-outline {
       border: 2px solid #e2e8f0;
       background: white;
       color: #475569;
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 1.75rem;
       border-radius: 10px;
       font-weight: 600;
       transition: all 0.3s ease;
+      font-size: 0.9375rem;
     }
     
     .btn-outline:hover {
@@ -132,18 +139,19 @@
     }
     
     .metric-label {
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       color: #64748b;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.5rem;
+      letter-spacing: 0.8px;
+      margin-bottom: 0.75rem;
     }
     
     .metric-value {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2.25rem;
+      font-weight: 800;
       color: #1e293b;
+      letter-spacing: -1px;
     }
     
     .result-card {
@@ -153,12 +161,14 @@
     }
     
     .result-header {
-      padding: 1.5rem;
+      padding: 1.75rem 1.5rem;
       color: white;
-      font-weight: 600;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      font-size: 1.125rem;
+      letter-spacing: -0.3px;
     }
     
     .result-header.greedy {
@@ -169,18 +179,11 @@
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     }
     
-    .badge-pill {
-      padding: 0.5rem 1rem;
-      border-radius: 50px;
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-    
     .comparison-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 1rem;
-      padding: 1rem;
+      grid-template-columns: 2fr 1.5fr 1.5fr;
+      gap: 1.5rem;
+      padding: 1.25rem 1.5rem;
       border-bottom: 1px solid #f1f5f9;
       align-items: center;
     }
@@ -196,22 +199,26 @@
     .comparison-label {
       font-weight: 600;
       color: #475569;
+      font-size: 0.9375rem;
     }
     
     .comparison-value {
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 1.125rem;
+      color: #1e293b;
     }
     
     .winner-badge {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: white;
-      padding: 0.25rem 0.75rem;
+      padding: 0.25rem 0.875rem;
       border-radius: 50px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.6875rem;
+      font-weight: 700;
       margin-left: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .data-table {
@@ -224,48 +231,168 @@
     }
     
     .data-table th {
-      padding: 1rem;
-      font-weight: 600;
+      padding: 1rem 1.25rem;
+      font-weight: 700;
       color: #475569;
       text-transform: uppercase;
       font-size: 0.75rem;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      border-bottom: 2px solid #e2e8f0;
     }
     
     .data-table td {
-      padding: 0.875rem 1rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
     }
     
     .data-table tr:hover {
       background: #f8fafc;
     }
     
-    .detail-output {
-      background: #1e293b;
-      color: #e2e8f0;
-      padding: 1.5rem;
+    .analysis-report {
+      background: white;
       border-radius: 12px;
-      font-family: 'Monaco', 'Menlo', monospace;
+      padding: 0;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .report-section {
+      padding: 2rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .report-section:last-child {
+      border-bottom: none;
+    }
+    
+    .report-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .report-item {
+      background: #f8fafc;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .report-item-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .report-item-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      letter-spacing: -0.5px;
+    }
+    
+    .items-list {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    
+    .item-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      padding: 0.875rem;
+      background: white;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+    
+    .item-row:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .item-number {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
       font-size: 0.875rem;
-      line-height: 1.6;
-      max-height: 500px;
-      overflow-y: auto;
+    }
+    
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .item-id {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .item-name {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.9375rem;
+    }
+    
+    .item-stats {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8125rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+    
+    .stat-badge {
+      background: #f1f5f9;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 700;
+      color: #475569;
     }
     
     .status-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem 1rem;
+      padding: 0.625rem 1.25rem;
       border-radius: 50px;
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 700;
     }
     
     .status-badge.success {
-      background: #d1fae5;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
       color: #065f46;
+      border: 2px solid #6ee7b7;
     }
     
     .status-dot {
@@ -277,66 +404,110 @@
     }
     
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.95); }
     }
     
     .chart-container {
       position: relative;
-      height: 300px;
+      height: 320px;
       margin-top: 1rem;
     }
     
     input[type="number"], input[type="file"] {
       border: 2px solid #e2e8f0;
       border-radius: 10px;
-      padding: 0.75rem 1rem;
+      padding: 0.875rem 1.25rem;
       font-size: 1rem;
       transition: all 0.3s ease;
+      font-weight: 500;
     }
     
     input[type="number"]:focus, input[type="file"]:focus {
       outline: none;
       border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
     
     .form-label {
-      font-weight: 600;
+      font-weight: 700;
       color: #475569;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.625rem;
       font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .text-hint {
       color: #94a3b8;
       font-size: 0.8125rem;
-      margin-top: 0.25rem;
+      margin-top: 0.375rem;
+      line-height: 1.5;
     }
     
     .section-title {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.375rem;
+      font-weight: 800;
       color: #1e293b;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
+      letter-spacing: -0.5px;
     }
     
-    .empty-state {
-      text-align: center;
-      padding: 3rem 2rem;
-      color: #94a3b8;
+    .performance-summary {
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      border: 2px solid #c7d2fe;
     }
     
-    .empty-state-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1rem;
-      background: #f1f5f9;
-      border-radius: 50%;
+    .summary-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #4338ca;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 1rem;
+    }
+    
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      color: #1e293b;
+      font-weight: 600;
+    }
+    
+    .summary-icon {
+      width: 24px;
+      height: 24px;
+      background: #4338ca;
+      color: white;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    
+    .export-btn {
+      background: white;
+      border: 2px solid #e2e8f0;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #475569;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .export-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+      background: #f8fafc;
     }
   </style>
 </head>
@@ -360,15 +531,15 @@
           <label class="form-label">Upload Dataset</label>
           <div class="upload-area" id="uploadArea">
             <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;">
-            <div class="upload-icon">📁</div>
-            <div style="font-weight: 600; margin-bottom: 0.5rem;">Click to upload or drag and drop</div>
-            <div class="text-hint">Excel file (.xlsx, .xls) - Max 10MB</div>
+            <div class="upload-icon">↑</div>
+            <div style="font-weight: 700; margin-bottom: 0.625rem; font-size: 1.125rem; color: #1e293b;">Click to upload or drag and drop</div>
+            <div class="text-hint">Excel file (.xlsx, .xls) with maximum size of 10MB</div>
             <div class="text-hint mt-2">Required columns: <strong>Item ID</strong>, <strong>Nama Barang</strong>, <strong>Berat</strong>, <strong>Nilai</strong></div>
           </div>
-          <div id="fileInfo" style="display: none; margin-top: 1rem;">
+          <div id="fileInfo" style="display: none; margin-top: 1.25rem;">
             <div class="status-badge success">
               <span class="status-dot"></span>
-              <span id="fileName">Dataset loaded</span>
+              <span id="fileName">Dataset loaded successfully</span>
             </div>
           </div>
         </div>
@@ -376,23 +547,27 @@
         <div class="col-md-4 mb-4">
           <label class="form-label">Knapsack Capacity</label>
           <input type="number" id="capacity" class="form-control" value="50" min="1">
-          <div class="text-hint">Maximum weight capacity</div>
+          <div class="text-hint">Maximum weight capacity for knapsack</div>
           
           <button class="btn btn-outline w-100 mt-3" onclick="generateSampleData()">
             Generate Sample Data
+          </button>
+          
+          <button class="btn btn-outline w-100 mt-2" onclick="downloadTemplate()">
+            Download Excel Template
           </button>
         </div>
       </div>
       
       <div class="d-flex gap-3 flex-wrap">
         <button class="btn btn-primary" onclick="runGreedy()">
-          <span style="margin-right: 0.5rem;">⚡</span> Run Greedy
+          Run Greedy Algorithm
         </button>
         <button class="btn btn-primary" onclick="runBruteForce()">
-          <span style="margin-right: 0.5rem;">🔍</span> Run Brute Force
+          Run Brute Force Algorithm
         </button>
         <button class="btn btn-primary" onclick="runBoth()">
-          <span style="margin-right: 0.5rem;">🚀</span> Compare Both
+          Compare Both Algorithms
         </button>
       </div>
     </div>
@@ -408,8 +583,8 @@
             <tr>
               <th>Item ID</th>
               <th>Nama Barang</th>
-              <th>Berat</th>
-              <th>Nilai</th>
+              <th>Berat (Weight)</th>
+              <th>Nilai (Value)</th>
               <th>Ratio (V/W)</th>
             </tr>
           </thead>
@@ -424,8 +599,7 @@
     <div class="col-lg-6 mb-4">
       <div class="card result-card">
         <div class="result-header greedy">
-          <span style="font-size: 1.5rem;">⚡</span>
-          <span>Greedy Algorithm</span>
+          <span>Greedy Algorithm Results</span>
         </div>
         <div class="card-body p-4">
           <div id="greedyOutput"></div>
@@ -436,8 +610,7 @@
     <div class="col-lg-6 mb-4">
       <div class="card result-card">
         <div class="result-header brute">
-          <span style="font-size: 1.5rem;">🔍</span>
-          <span>Brute Force Algorithm</span>
+          <span>Brute Force Algorithm Results</span>
         </div>
         <div class="card-body p-4">
           <div id="bruteOutput"></div>
@@ -459,7 +632,7 @@
     <div class="col-lg-6 mb-4">
       <div class="card">
         <div class="card-body p-4">
-          <h6 style="font-weight: 600; margin-bottom: 1rem;">Value & Weight Analysis</h6>
+          <h6 style="font-weight: 700; margin-bottom: 1rem; color: #1e293b; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">Value & Weight Analysis</h6>
           <div class="chart-container">
             <canvas id="resultChart"></canvas>
           </div>
@@ -470,7 +643,7 @@
     <div class="col-lg-6 mb-4">
       <div class="card">
         <div class="card-body p-4">
-          <h6 style="font-weight: 600; margin-bottom: 1rem;">Algorithm Efficiency</h6>
+          <h6 style="font-weight: 700; margin-bottom: 1rem; color: #1e293b; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">Algorithm Efficiency</h6>
           <div class="chart-container">
             <canvas id="efficiencyChart"></canvas>
           </div>
@@ -479,11 +652,14 @@
     </div>
   </div>
 
-  <!-- Detailed Output -->
+  <!-- Detailed Analysis Report -->
   <div class="card" id="detailSection" style="display: none;">
     <div class="card-body p-4">
-      <h5 class="section-title">Detailed Analysis Report</h5>
-      <div class="detail-output" id="detailOutput"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h5 class="section-title mb-0">Detailed Analysis Report</h5>
+        <button class="export-btn" onclick="exportReport()">Export Report</button>
+      </div>
+      <div class="analysis-report" id="detailOutput"></div>
     </div>
   </div>
 
@@ -582,17 +758,17 @@ function showDatasetPreview() {
     const ratio = (item.value / item.weight).toFixed(2);
     html += `
       <tr>
-        <td><strong>${item.id}</strong></td>
-        <td>${item.name}</td>
+        <td><strong style="color: #667eea;">${item.id}</strong></td>
+        <td style="font-weight: 600;">${item.name}</td>
         <td>${item.weight}</td>
         <td>${item.value}</td>
-        <td><span style="color: #667eea; font-weight: 600;">${ratio}</span></td>
+        <td><span style="color: #10b981; font-weight: 700;">${ratio}</span></td>
       </tr>
     `;
   });
   
   if (items.length > 10) {
-    html += `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">... and ${items.length - 10} more items</td></tr>`;
+    html += `<tr><td colspan="5" style="text-align: center; color: #94a3b8; font-style: italic;">... and ${items.length - 10} more items</td></tr>`;
   }
   
   table.innerHTML = html;
@@ -616,6 +792,20 @@ function generateSampleData() {
   document.getElementById('fileName').textContent = `Sample Dataset - ${items.length} items loaded`;
   
   showDatasetPreview();
+}
+
+// Download Excel Template
+function downloadTemplate() {
+  const template = [
+    { 'Item ID': 'ITM001', 'Nama Barang': 'Laptop Gaming', 'Berat': 3, 'Nilai': 2000 },
+    { 'Item ID': 'ITM002', 'Nama Barang': 'Kamera DSLR', 'Berat': 2, 'Nilai': 1500 },
+    { 'Item ID': 'ITM003', 'Nama Barang': 'Tablet Pro', 'Berat': 1, 'Nilai': 800 }
+  ];
+  
+  const ws = XLSX.utils.json_to_sheet(template);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+  XLSX.writeFile(wb, 'knapsack_template.xlsx');
 }
 
 // Greedy Algorithm
@@ -720,52 +910,38 @@ function displayResults() {
   const greedyHTML = `
     <div class="metric-card">
       <div class="metric-label">Total Value</div>
-      <div class="metric-value" style="color: #10b981;">${greedyResult.value}</div>
+      <div class="metric-value" style="color: #10b981;">${greedyResult.value.toLocaleString()}</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Total Weight</div>
-      <div class="metric-value">${greedyResult.weight} <span style="font-size: 1rem; color: #94a3b8;">/ ${cap}</span></div>
+      <div class="metric-value">${greedyResult.weight} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">/ ${cap}</span></div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Execution Time</div>
-      <div class="metric-value" style="font-size: 1.5rem;">${greedyResult.time} <span style="font-size: 1rem; color: #94a3b8;">ms</span></div>
+      <div class="metric-value" style="font-size: 1.75rem;">${greedyResult.time} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">ms</span></div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Selected Items (${greedyResult.items.length})</div>
-      <div style="margin-top: 0.75rem;">
-        ${greedyResult.items.map(item => `
-          <div style="padding: 0.5rem; background: #f8fafc; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-            <span><strong>${item.id}</strong> - ${item.name}</span>
-            <span style="color: #64748b;">W: ${item.weight} | V: ${item.value}</span>
-          </div>
-        `).join('')}
-      </div>
+      <div class="metric-label">Items Selected</div>
+      <div class="metric-value" style="font-size: 1.75rem;">${greedyResult.items.length} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">items</span></div>
     </div>
   `;
 
   const bruteHTML = `
     <div class="metric-card">
       <div class="metric-label">Total Value</div>
-      <div class="metric-value" style="color: #f59e0b;">${bruteResult.value}</div>
+      <div class="metric-value" style="color: #f59e0b;">${bruteResult.value.toLocaleString()}</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Total Weight</div>
-      <div class="metric-value">${bruteResult.weight} <span style="font-size: 1rem; color: #94a3b8;">/ ${cap}</span></div>
+      <div class="metric-value">${bruteResult.weight} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">/ ${cap}</span></div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Execution Time</div>
-      <div class="metric-value" style="font-size: 1.5rem;">${bruteResult.time} <span style="font-size: 1rem; color: #94a3b8;">ms</span></div>
+      <div class="metric-value" style="font-size: 1.75rem;">${bruteResult.time} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">ms</span></div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Selected Items (${bruteResult.items.length})</div>
-      <div style="margin-top: 0.75rem;">
-        ${bruteResult.items.map(item => `
-          <div style="padding: 0.5rem; background: #f8fafc; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-            <span><strong>${item.id}</strong> - ${item.name}</span>
-            <span style="color: #64748b;">W: ${item.weight} | V: ${item.value}</span>
-          </div>
-        `).join('')}
-      </div>
+      <div class="metric-label">Items Selected</div>
+      <div class="metric-value" style="font-size: 1.75rem;">${bruteResult.items.length} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">items</span></div>
     </div>
   `;
 
@@ -793,8 +969,8 @@ function displayComparison() {
   const html = `
     <div class="comparison-row">
       <div class="comparison-label">Total Value</div>
-      <div class="comparison-value">${greedyResult.value} ${valueWinner ? '<span class="winner-badge">Winner</span>' : ''}</div>
-      <div class="comparison-value">${bruteResult.value} ${!valueWinner ? '<span class="winner-badge">Winner</span>' : ''}</div>
+      <div class="comparison-value">${greedyResult.value.toLocaleString()} ${valueWinner ? '<span class="winner-badge">Best</span>' : ''}</div>
+      <div class="comparison-value">${bruteResult.value.toLocaleString()} ${!valueWinner ? '<span class="winner-badge">Best</span>' : ''}</div>
     </div>
     <div class="comparison-row">
       <div class="comparison-label">Total Weight</div>
@@ -816,82 +992,189 @@ function displayComparison() {
       <div class="comparison-value" style="font-size: 1rem;">O(n log n)</div>
       <div class="comparison-value" style="font-size: 1rem;">O(2<sup>n</sup>)</div>
     </div>
-    <div class="comparison-row" style="background: #f8fafc;">
-      <div class="comparison-label">Greedy Accuracy</div>
-      <div class="comparison-value" colspan="2" style="grid-column: 2 / 4; font-size: 1.5rem; color: #667eea;">${accuracy}%</div>
+    <div class="comparison-row" style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);">
+      <div class="comparison-label" style="color: #4338ca;">Greedy Accuracy</div>
+      <div class="comparison-value" style="grid-column: 2 / 4; font-size: 1.75rem; color: #4338ca;">${accuracy}%</div>
     </div>
-    <div class="comparison-row" style="background: #f8fafc;">
-      <div class="comparison-label">Speed Improvement</div>
-      <div class="comparison-value" colspan="2" style="grid-column: 2 / 4; font-size: 1.5rem; color: #10b981;">${speedup}x faster</div>
+    <div class="comparison-row" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+      <div class="comparison-label" style="color: #065f46;">Speed Improvement</div>
+      <div class="comparison-value" style="grid-column: 2 / 4; font-size: 1.75rem; color: #065f46;">${speedup}x faster</div>
     </div>
   `;
   
   document.getElementById('comparisonTable').innerHTML = html;
 }
 
-// Detailed Output
+// Display Detailed Output
 function displayDetailedOutput() {
   const cap = document.getElementById('capacity').value;
+  const accuracy = bruteResult.value > 0 ? ((greedyResult.value / bruteResult.value) * 100).toFixed(2) : 100;
+  const speedup = greedyResult.time > 0 ? (bruteResult.time / greedyResult.time).toFixed(2) : 0;
   
-  let output = '════════════════════════════════════════════════════════════════════\n';
-  output += '                  KNAPSACK ALGORITHM ANALYSIS REPORT\n';
-  output += '════════════════════════════════════════════════════════════════════\n\n';
-  
-  output += `Configuration:\n`;
-  output += `  Knapsack Capacity: ${cap}\n`;
-  output += `  Available Items: ${items.length}\n\n`;
-  
-  output += '────────────────────────────────────────────────────────────────────\n';
-  output += 'GREEDY ALGORITHM RESULTS\n';
-  output += '────────────────────────────────────────────────────────────────────\n';
-  output += `  Total Value:        ${greedyResult.value}\n`;
-  output += `  Total Weight:       ${greedyResult.weight} / ${cap}\n`;
-  output += `  Execution Time:     ${greedyResult.time} ms\n`;
-  output += `  Items Selected:     ${greedyResult.items.length}\n\n`;
-  output += `  Selected Items:\n`;
-  greedyResult.items.forEach((item, i) => {
-    output += `    ${i+1}. [${item.id}] ${item.name}\n`;
-    output += `       Weight: ${item.weight} | Value: ${item.value} | Ratio: ${(item.value/item.weight).toFixed(2)}\n`;
-  });
-  
-  output += '\n────────────────────────────────────────────────────────────────────\n';
-  output += 'BRUTE FORCE ALGORITHM RESULTS\n';
-  output += '────────────────────────────────────────────────────────────────────\n';
-  output += `  Total Value:        ${bruteResult.value}\n`;
-  output += `  Total Weight:       ${bruteResult.weight} / ${cap}\n`;
-  output += `  Execution Time:     ${bruteResult.time} ms\n`;
-  output += `  Items Selected:     ${bruteResult.items.length}\n\n`;
-  output += `  Selected Items:\n`;
-  bruteResult.items.forEach((item, i) => {
-    output += `    ${i+1}. [${item.id}] ${item.name}\n`;
-    output += `       Weight: ${item.weight} | Value: ${item.value}\n`;
-  });
-  
-  if (bruteResult.time > 0 && greedyResult.time > 0) {
-    output += '\n────────────────────────────────────────────────────────────────────\n';
-    output += 'COMPARATIVE ANALYSIS\n';
-    output += '────────────────────────────────────────────────────────────────────\n';
-    const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
-    const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
-    output += `  Greedy Accuracy:    ${accuracy}% of optimal solution\n`;
-    output += `  Speed Improvement:  ${speedup}x faster\n`;
-    output += `  Value Difference:   ${Math.abs(bruteResult.value - greedyResult.value)}\n`;
-    output += `  Weight Difference:  ${Math.abs(bruteResult.weight - greedyResult.weight)}\n`;
+  let html = `
+    <!-- Configuration Section -->
+    <div class="report-section">
+      <div class="report-title">Configuration</div>
+      <div class="report-grid">
+        <div class="report-item">
+          <div class="report-item-label">Knapsack Capacity</div>
+          <div class="report-item-value">${cap}</div>
+        </div>
+        <div class="report-item">
+          <div class="report-item-label">Available Items</div>
+          <div class="report-item-value">${items.length}</div>
+        </div>
+        <div class="report-item">
+          <div class="report-item-label">Analysis Date</div>
+          <div class="report-item-value" style="font-size: 1rem;">${new Date().toLocaleDateString('id-ID')}</div>
+        </div>
+      </div>
+    </div>
     
-    output += `\n  Performance Summary:\n`;
-    if (accuracy >= 95) {
-      output += `    ✓ Greedy achieved ${accuracy}% accuracy - Excellent performance\n`;
-    } else if (accuracy >= 80) {
-      output += `    ✓ Greedy achieved ${accuracy}% accuracy - Good performance\n`;
-    } else {
-      output += `    ⚠ Greedy achieved ${accuracy}% accuracy - Consider optimization\n`;
-    }
-    output += `    ✓ Greedy was ${speedup}x faster than Brute Force\n`;
-  }
+    <!-- Greedy Algorithm Section -->
+    <div class="report-section">
+      <div class="report-title">Greedy Algorithm Analysis</div>
+      <div class="report-grid">
+        <div class="report-item" style="border-left-color: #10b981;">
+          <div class="report-item-label">Total Value</div>
+          <div class="report-item-value">${greedyResult.value.toLocaleString()}</div>
+        </div>
+        <div class="report-item" style="border-left-color: #10b981;">
+          <div class="report-item-label">Total Weight</div>
+          <div class="report-item-value">${greedyResult.weight} / ${cap}</div>
+        </div>
+        <div class="report-item" style="border-left-color: #10b981;">
+          <div class="report-item-label">Execution Time</div>
+          <div class="report-item-value">${greedyResult.time} ms</div>
+        </div>
+        <div class="report-item" style="border-left-color: #10b981;">
+          <div class="report-item-label">Items Selected</div>
+          <div class="report-item-value">${greedyResult.items.length}</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem;">
+        <div style="font-weight: 700; color: #475569; margin-bottom: 1rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px;">Selected Items</div>
+        <div class="items-list">
+          ${greedyResult.items.map((item, i) => `
+            <div class="item-row">
+              <div class="item-number">${i + 1}</div>
+              <div class="item-info">
+                <div class="item-id">${item.id}</div>
+                <div class="item-name">${item.name}</div>
+              </div>
+              <div class="item-stats">
+                <span class="stat-badge">W: ${item.weight}</span>
+                <span class="stat-badge">V: ${item.value}</span>
+                <span class="stat-badge" style="background: #e0e7ff; color: #4338ca;">R: ${(item.value/item.weight).toFixed(2)}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Brute Force Algorithm Section -->
+    <div class="report-section">
+      <div class="report-title">Brute Force Algorithm Analysis</div>
+      <div class="report-grid">
+        <div class="report-item" style="border-left-color: #f59e0b;">
+          <div class="report-item-label">Total Value</div>
+          <div class="report-item-value">${bruteResult.value.toLocaleString()}</div>
+        </div>
+        <div class="report-item" style="border-left-color: #f59e0b;">
+          <div class="report-item-label">Total Weight</div>
+          <div class="report-item-value">${bruteResult.weight} / ${cap}</div>
+        </div>
+        <div class="report-item" style="border-left-color: #f59e0b;">
+          <div class="report-item-label">Execution Time</div>
+          <div class="report-item-value">${bruteResult.time} ms</div>
+        </div>
+        <div class="report-item" style="border-left-color: #f59e0b;">
+          <div class="report-item-label">Items Selected</div>
+          <div class="report-item-value">${bruteResult.items.length}</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem;">
+        <div style="font-weight: 700; color: #475569; margin-bottom: 1rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px;">Selected Items</div>
+        <div class="items-list">
+          ${bruteResult.items.map((item, i) => `
+            <div class="item-row">
+              <div class="item-number" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">${i + 1}</div>
+              <div class="item-info">
+                <div class="item-id">${item.id}</div>
+                <div class="item-name">${item.name}</div>
+              </div>
+              <div class="item-stats">
+                <span class="stat-badge">W: ${item.weight}</span>
+                <span class="stat-badge">V: ${item.value}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Comparative Analysis Section -->
+    <div class="report-section">
+      <div class="report-title">Comparative Analysis</div>
+      <div class="report-grid">
+        <div class="report-item" style="border-left-color: #667eea;">
+          <div class="report-item-label">Greedy Accuracy</div>
+          <div class="report-item-value">${accuracy}%</div>
+        </div>
+        <div class="report-item" style="border-left-color: #667eea;">
+          <div class="report-item-label">Speed Improvement</div>
+          <div class="report-item-value">${speedup}x</div>
+        </div>
+        <div class="report-item" style="border-left-color: #667eea;">
+          <div class="report-item-label">Value Difference</div>
+          <div class="report-item-value">${Math.abs(bruteResult.value - greedyResult.value).toLocaleString()}</div>
+        </div>
+        <div class="report-item" style="border-left-color: #667eea;">
+          <div class="report-item-label">Weight Difference</div>
+          <div class="report-item-value">${Math.abs(bruteResult.weight - greedyResult.weight)}</div>
+        </div>
+      </div>
+      
+      <div class="performance-summary">
+        <div class="summary-title">Performance Summary</div>
+        ${accuracy >= 95 ? `
+          <div class="summary-item">
+            <div class="summary-icon">✓</div>
+            <div>Greedy algorithm achieved ${accuracy}% accuracy - Excellent performance for this dataset</div>
+          </div>
+        ` : accuracy >= 80 ? `
+          <div class="summary-item">
+            <div class="summary-icon">✓</div>
+            <div>Greedy algorithm achieved ${accuracy}% accuracy - Good performance for this dataset</div>
+          </div>
+        ` : `
+          <div class="summary-item">
+            <div class="summary-icon">⚠</div>
+            <div>Greedy algorithm achieved ${accuracy}% accuracy - Consider optimization or alternative approaches</div>
+          </div>
+        `}
+        <div class="summary-item">
+          <div class="summary-icon">⚡</div>
+          <div>Greedy algorithm executed ${speedup}x faster than Brute Force algorithm</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon">📊</div>
+          <div>Greedy uses O(n log n) time complexity vs Brute Force's O(2<sup>n</sup>)</div>
+        </div>
+        ${greedyResult.value === bruteResult.value ? `
+          <div class="summary-item">
+            <div class="summary-icon">★</div>
+            <div>Greedy algorithm found the optimal solution for this configuration</div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
   
-  output += '\n════════════════════════════════════════════════════════════════════\n';
-  
-  document.getElementById('detailOutput').textContent = output;
+  document.getElementById('detailOutput').innerHTML = html;
 }
 
 // Render Charts
@@ -904,12 +1187,12 @@ function renderCharts() {
   chart1 = new Chart(ctx1, {
     type: 'bar',
     data: {
-      labels: ['Greedy', 'Brute Force'],
+      labels: ['Greedy Algorithm', 'Brute Force Algorithm'],
       datasets: [
         {
           label: 'Total Value',
           data: [greedyResult.value, bruteResult.value],
-          backgroundColor: 'rgba(16, 185, 129, 0.8)',
+          backgroundColor: 'rgba(16, 185, 129, 0.85)',
           borderColor: 'rgba(16, 185, 129, 1)',
           borderWidth: 0,
           borderRadius: 8
@@ -917,7 +1200,7 @@ function renderCharts() {
         {
           label: 'Total Weight',
           data: [greedyResult.weight, bruteResult.weight],
-          backgroundColor: 'rgba(245, 158, 11, 0.8)',
+          backgroundColor: 'rgba(245, 158, 11, 0.85)',
           borderColor: 'rgba(245, 158, 11, 1)',
           borderWidth: 0,
           borderRadius: 8
@@ -931,8 +1214,9 @@ function renderCharts() {
         legend: { 
           position: 'top',
           labels: {
-            font: { family: 'Inter', size: 12, weight: '600' },
-            padding: 15
+            font: { family: 'Inter', size: 13, weight: '700' },
+            padding: 20,
+            color: '#1e293b'
           }
         }
       },
@@ -940,11 +1224,17 @@ function renderCharts() {
         y: { 
           beginAtZero: true,
           grid: { color: '#f1f5f9' },
-          ticks: { font: { family: 'Inter' } }
+          ticks: { 
+            font: { family: 'Inter', weight: '600' },
+            color: '#64748b'
+          }
         },
         x: {
           grid: { display: false },
-          ticks: { font: { family: 'Inter', weight: '600' } }
+          ticks: { 
+            font: { family: 'Inter', weight: '700' },
+            color: '#1e293b'
+          }
         }
       }
     }
@@ -961,22 +1251,26 @@ function renderCharts() {
       labels: ['Speed', 'Accuracy', 'Efficiency', 'Optimality'],
       datasets: [
         {
-          label: 'Greedy',
+          label: 'Greedy Algorithm',
           data: [100, parseFloat(accuracy), 95, parseFloat(accuracy)],
           borderColor: 'rgba(16, 185, 129, 1)',
           backgroundColor: 'rgba(16, 185, 129, 0.2)',
-          borderWidth: 2,
+          borderWidth: 3,
           pointBackgroundColor: 'rgba(16, 185, 129, 1)',
-          pointRadius: 4
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5
         },
         {
-          label: 'Brute Force',
+          label: 'Brute Force Algorithm',
           data: [50, 100, 70, 100],
           borderColor: 'rgba(245, 158, 11, 1)',
           backgroundColor: 'rgba(245, 158, 11, 0.2)',
-          borderWidth: 2,
+          borderWidth: 3,
           pointBackgroundColor: 'rgba(245, 158, 11, 1)',
-          pointRadius: 4
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5
         }
       ]
     },
@@ -987,8 +1281,9 @@ function renderCharts() {
         legend: { 
           position: 'top',
           labels: {
-            font: { family: 'Inter', size: 12, weight: '600' },
-            padding: 15
+            font: { family: 'Inter', size: 13, weight: '700' },
+            padding: 20,
+            color: '#1e293b'
           }
         }
       },
@@ -998,15 +1293,66 @@ function renderCharts() {
           max: 100,
           ticks: { 
             stepSize: 25,
-            font: { family: 'Inter' }
+            font: { family: 'Inter', weight: '600' },
+            color: '#64748b'
           },
-          grid: { color: '#f1f5f9' }
+          grid: { color: '#e2e8f0' },
+          pointLabels: {
+            font: { family: 'Inter', weight: '700', size: 12 },
+            color: '#1e293b'
+          }
         }
       }
     }
   });
 }
-</script>
 
+// Export Report
+function exportReport() {
+  const reportData = [
+    ['KNAPSACK ALGORITHM ANALYSIS REPORT'],
+    ['Generated on: ' + new Date().toLocaleString('id-ID')],
+    [''],
+    ['CONFIGURATION'],
+    ['Knapsack Capacity', document.getElementById('capacity').value],
+    ['Available Items', items.length],
+    [''],
+    ['GREEDY ALGORITHM RESULTS'],
+    ['Total Value', greedyResult.value],
+    ['Total Weight', greedyResult.weight],
+    ['Execution Time (ms)', greedyResult.time],
+    ['Items Selected', greedyResult.items.length],
+    [''],
+    ['Selected Items:'],
+    ['No', 'Item ID', 'Name', 'Weight', 'Value', 'Ratio'],
+    ...greedyResult.items.map((item, i) => [
+      i + 1, item.id, item.name, item.weight, item.value, (item.value/item.weight).toFixed(2)
+    ]),
+    [''],
+    ['BRUTE FORCE ALGORITHM RESULTS'],
+    ['Total Value', bruteResult.value],
+    ['Total Weight', bruteResult.weight],
+    ['Execution Time (ms)', bruteResult.time],
+    ['Items Selected', bruteResult.items.length],
+    [''],
+    ['Selected Items:'],
+    ['No', 'Item ID', 'Name', 'Weight', 'Value'],
+    ...bruteResult.items.map((item, i) => [
+      i + 1, item.id, item.name, item.weight, item.value
+    ]),
+    [''],
+    ['COMPARATIVE ANALYSIS'],
+    ['Greedy Accuracy (%)', ((greedyResult.value / bruteResult.value) * 100).toFixed(2)],
+    ['Speed Improvement (x)', (bruteResult.time / greedyResult.time).toFixed(2)],
+    ['Value Difference', Math.abs(bruteResult.value - greedyResult.value)],
+    ['Weight Difference', Math.abs(bruteResult.weight - greedyResult.weight)]
+  ];
+  
+  const ws = XLSX.utils.aoa_to_sheet(reportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Analysis Report');
+  XLSX.writeFile(wb, `knapsack_analysis_report_${Date.now()}.xlsx`);
+}
+</script>
 </body>
 </html>
