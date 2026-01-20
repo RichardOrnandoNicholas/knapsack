@@ -912,6 +912,8 @@ function displayResults() {
 
   const cap = document.getElementById('capacity').value;
 
+  const greedyItemIds = greedyResult.items.map(i => i.id).sort().join(',');
+  
   const greedyHTML = `
     <div class="metric-card">
       <div class="metric-label">Total Value</div>
@@ -929,8 +931,13 @@ function displayResults() {
       <div class="metric-label">Items Selected</div>
       <div class="metric-value" style="font-size: 1.75rem;">${greedyResult.items.length} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">items</span></div>
     </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 8px; font-size: 0.75rem; color: #64748b;">
+      <strong>Item IDs:</strong> ${greedyItemIds}
+    </div>
   `;
 
+  const bruteItemIds = bruteResult.items.map(i => i.id).sort().join(',');
+  
   const bruteHTML = `
     <div class="metric-card">
       <div class="metric-label">Total Value</div>
@@ -947,6 +954,9 @@ function displayResults() {
     <div class="metric-card">
       <div class="metric-label">Items Selected</div>
       <div class="metric-value" style="font-size: 1.75rem;">${bruteResult.items.length} <span style="font-size: 1rem; color: #94a3b8; font-weight: 600;">items</span></div>
+    </div>
+    <div style="margin-top: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 8px; font-size: 0.75rem; color: #64748b;">
+      <strong>Item IDs:</strong> ${bruteItemIds}
     </div>
   `;
 
