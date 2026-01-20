@@ -546,7 +546,7 @@
         
         <div class="col-md-4 mb-4">
           <label class="form-label">Knapsack Capacity</label>
-          <input type="number" id="capacity" class="form-control" value="50" min="1">
+          <input type="number" id="capacity" class="form-control" value="25" min="1">
           <div class="text-hint">Maximum weight capacity for knapsack</div>
           
           <button class="btn btn-outline w-100 mt-3" onclick="generateSampleData()">
@@ -754,7 +754,7 @@ function showDatasetPreview() {
   const table = document.getElementById('datasetTable');
   
   let html = '';
-  items.slice(0, 10).forEach(item => {
+  items.forEach(item => {
     const ratio = (item.value / item.weight).toFixed(2);
     html += `
       <tr>
@@ -767,10 +767,6 @@ function showDatasetPreview() {
     `;
   });
   
-  if (items.length > 10) {
-    html += `<tr><td colspan="5" style="text-align: center; color: #94a3b8; font-style: italic;">... and ${items.length - 10} more items</td></tr>`;
-  }
-  
   table.innerHTML = html;
   preview.style.display = 'block';
 }
@@ -778,14 +774,21 @@ function showDatasetPreview() {
 // Generate Sample Data
 function generateSampleData() {
   items = [
-    { id: 'ITM001', name: 'Laptop Gaming', weight: 3, value: 2000 },
-    { id: 'ITM002', name: 'Kamera DSLR', weight: 2, value: 1500 },
-    { id: 'ITM003', name: 'Tablet Pro', weight: 1, value: 800 },
-    { id: 'ITM004', name: 'Speaker Bluetooth', weight: 2, value: 600 },
-    { id: 'ITM005', name: 'Headphone Wireless', weight: 1, value: 400 },
-    { id: 'ITM006', name: 'Power Bank', weight: 1, value: 200 },
-    { id: 'ITM007', name: 'Mouse Gaming', weight: 0.5, value: 150 },
-    { id: 'ITM008', name: 'Mechanical Keyboard', weight: 1.5, value: 300 }
+    { id: '1', name: 'Laptop', weight: 2, value: 300 },
+    { id: '2', name: 'Printer', weight: 8, value: 250 },
+    { id: '3', name: 'Monitor', weight: 5, value: 200 },
+    { id: '4', name: 'Router', weight: 1, value: 150 },
+    { id: '5', name: 'Switch', weight: 3, value: 180 },
+    { id: '6', name: 'Server Mini', weight: 12, value: 500 },
+    { id: '7', name: 'UPS', weight: 10, value: 400 },
+    { id: '8', name: 'CCTV Camera', weight: 2, value: 220 },
+    { id: '9', name: 'Hard Drive', weight: 1, value: 120 },
+    { id: '10', name: 'Keyboard Set', weight: 1, value: 60 },
+    { id: '11', name: 'Mouse Set', weight: 1, value: 40 },
+    { id: '12', name: 'Projector', weight: 6, value: 350 },
+    { id: '13', name: 'Access Point', weight: 2, value: 160 },
+    { id: '14', name: 'Network Cable Box', weight: 15, value: 90 },
+    { id: '15', name: 'Tool Kit', weight: 4, value: 140 }
   ];
   
   document.getElementById('fileInfo').style.display = 'block';
@@ -797,9 +800,11 @@ function generateSampleData() {
 // Download Excel Template
 function downloadTemplate() {
   const template = [
-    { 'Item ID': 'ITM001', 'Nama Barang': 'Laptop Gaming', 'Berat': 3, 'Nilai': 2000 },
-    { 'Item ID': 'ITM002', 'Nama Barang': 'Kamera DSLR', 'Berat': 2, 'Nilai': 1500 },
-    { 'Item ID': 'ITM003', 'Nama Barang': 'Tablet Pro', 'Berat': 1, 'Nilai': 800 }
+    { 'Item ID': '1', 'Nama Barang': 'Laptop', 'Berat': 2, 'Nilai': 300 },
+    { 'Item ID': '2', 'Nama Barang': 'Printer', 'Berat': 8, 'Nilai': 250 },
+    { 'Item ID': '3', 'Nama Barang': 'Monitor', 'Berat': 5, 'Nilai': 200 },
+    { 'Item ID': '4', 'Nama Barang': 'Router', 'Berat': 1, 'Nilai': 150 },
+    { 'Item ID': '5', 'Nama Barang': 'Switch', 'Berat': 3, 'Nilai': 180 }
   ];
   
   const ws = XLSX.utils.json_to_sheet(template);
@@ -960,8 +965,8 @@ function displayResults() {
 function displayComparison() {
   document.getElementById('comparisonSection').style.display = 'block';
   
-  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
-  const speedup = (bruteResult.time / greedyResult.time).toFixed(2);
+  const accuracy = bruteResult.value > 0 ? ((greedyResult.value / bruteResult.value) * 100).toFixed(2) : 100;
+  const speedup = greedyResult.time > 0 ? (bruteResult.time / greedyResult.time).toFixed(2) : 0;
   
   const valueWinner = greedyResult.value >= bruteResult.value;
   const timeWinner = greedyResult.time <= bruteResult.time;
@@ -1060,7 +1065,7 @@ function displayDetailedOutput() {
             <div class="item-row">
               <div class="item-number">${i + 1}</div>
               <div class="item-info">
-                <div class="item-id">${item.id}</div>
+                <div class="item-id">Item #${item.id}</div>
                 <div class="item-name">${item.name}</div>
               </div>
               <div class="item-stats">
@@ -1103,7 +1108,7 @@ function displayDetailedOutput() {
             <div class="item-row">
               <div class="item-number" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">${i + 1}</div>
               <div class="item-info">
-                <div class="item-id">${item.id}</div>
+                <div class="item-id">Item #${item.id}</div>
                 <div class="item-name">${item.name}</div>
               </div>
               <div class="item-stats">
@@ -1243,7 +1248,7 @@ function renderCharts() {
   const ctx2 = document.getElementById('efficiencyChart');
   if (chart2) chart2.destroy();
   
-  const accuracy = ((greedyResult.value / bruteResult.value) * 100).toFixed(2);
+  const accuracy = bruteResult.value > 0 ? ((greedyResult.value / bruteResult.value) * 100).toFixed(2) : 100;
   
   chart2 = new Chart(ctx2, {
     type: 'radar',
